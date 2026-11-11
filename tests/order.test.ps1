@@ -44,6 +44,16 @@ Set-Content (Join-Path $tmp 'p.txt') ("# 주석`r`n`r`n  프로젝트  `r`n" + [
 $PriorityFile = Join-Path $tmp 'p.txt'
 Check '우선순위 파일: 주석·빈 줄·앞뒤 공백 처리' ((Get-PriorityList)[0] -eq '프로젝트' -and (Get-PriorityList).Count -ge 2)
 Get-ChildItem $tmp -Recurse -File | Remove-Item -Force
+# 경로를 '...' 문자열에 넣는 함수: 유니코드 작은따옴표로도 문자열을 빠져나갈 수 없다
+Check 'ConvertTo-PsSingleQuoted: 평범한 경로는 그대로' ((ConvertTo-PsSingleQuoted 'C:\work\alpha') -eq 'C:\work\alpha')
+Check 'ConvertTo-PsSingleQuoted: ASCII 작은따옴표는 두 번씩' ((ConvertTo-PsSingleQuoted "a'b") -eq "a''b")
+$uq = [string][char]0x2018 + [string][char]0x2019 + [string][char]0x201A + [string][char]0x201B
+Check 'ConvertTo-PsSingleQuoted: ‘ ’ ‚ ‛ 도 두 번씩' ((ConvertTo-PsSingleQuoted $uq) -eq ($uq[0].ToString() * 2 + $uq[1].ToString() * 2 + $uq[2].ToString() * 2 + $uq[3].ToString() * 2))
+$evil = 'x' + [char]0x2019 + '; Get-Date; ' + [char]0x2018 + 'y'
+$cmdText = "Set-Location -LiteralPath '" + (ConvertTo-PsSingleQuoted $evil) + "'; "
+$perr = $null; $ptok = $null; $past = [Management.Automation.Language.Parser]::ParseInput($cmdText, [ref]$ptok, [ref]$perr)
+$ncmd = @($past.FindAll({ param($n) $n -is [Management.Automation.Language.CommandAst] }, $true)).Count
+Check '유니코드 따옴표가 든 폴더 이름으로도 명령이 하나(Set-Location)로만 해석됨' (@($perr).Count -eq 0 -and $ncmd -eq 1)
 "합계: PASS $script:pass / FAIL $script:fail"
 
 if ($script:fail -gt 0) { exit 1 }

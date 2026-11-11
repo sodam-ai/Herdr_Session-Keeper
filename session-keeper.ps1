@@ -736,10 +736,13 @@ function Add-Attempt($e) {
     if ($map.ContainsKey($e.addr)) { Set-Prop $map[$e.addr] 'attempts' (1 + [int](Get-Prop $map[$e.addr] 'attempts' 0)); Save-Map $map }
 }
 
+# PowerShell 은 ASCII 작은따옴표(') 말고도 ‘ ’ ‚ ‛ 를 작은따옴표로 취급한다. 경로를 '...' 문자열에 넣을 때는 이 다섯 글자를 모두 두 번씩 써야 문자열을 빠져나가지 못한다.
+function ConvertTo-PsSingleQuoted([string]$s) { return [regex]::Replace("$s", "[\u2018\u2019\u201A\u201B']", '$0$0') }
+
 # 빈 셸에 입력만 한다(실행 확인은 기다리지 않음). 반환: 'SENT' | 'SEND-FAIL'
 function Send-ResumeInput($e) {
     $cwd = "$($e.cwd)"; $pre = ''
-    if ($cwd -and (Test-Path -LiteralPath $cwd)) { $pre = "Set-Location -LiteralPath '" + $cwd.Replace("'", "''") + "'; " }
+    if ($cwd -and (Test-Path -LiteralPath $cwd)) { $pre = "Set-Location -LiteralPath '" + (ConvertTo-PsSingleQuoted $cwd) + "'; " }
     else { Write-Log "$($e.addr) 기록된 작업 폴더가 없어 현재 폴더에서 실행합니다: $cwd" }
     $tpl = $(if ("$(Get-Prop $e 'tool' 'claude')" -eq 'codex') { $CodexTemplate } else { $Template })
     $cmd = $pre + ($tpl -f $e.sid)
