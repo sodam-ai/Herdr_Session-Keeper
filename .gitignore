@@ -1,0 +1,33 @@
+# 이 PC 전용 기록·로그: 세션 ID·프로젝트 이름이 들어 있어 올리지 않는다
+session-map.json*
+session-keeper.log*
+session-keeper.alive
+session-keeper.cutoff
+session-keeper.appupdate.*
+session-keeper.launcher.json
+LAST-RESTORE.txt
+restore-history.log*
+restore-priority.txt
+shortcut-backup/
+_backup/
+kit.env
+kit.install.json
+
+# Herdr 가 모드 폴더에 자동 생성하는 파일
+herdr-mod/*/gpui-kit.d.ts
+herdr-mod/*/jsconfig.json
+
+# 비밀 값·개인 설정·작업 도구 폴더·산출물
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+CHECKPOINT.md
+.omc/
+.remember/
+.sodam-re/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
