@@ -1,0 +1,6 @@
+{
+  "name": "herdr-session-keeper",
+  "version": "1.0.0",
+  "license": "Apache-2.0",
+  "description": "Herdr 세션키퍼 설치 도우미: Claude Code·Codex 세션 복구 모드 + Herdr 앱 자동 업데이트 (Windows 전용). 스킬 herdr-session-keeper 가 설치·점검·제거를 안내합니다."
+}
